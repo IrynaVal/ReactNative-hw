@@ -14,12 +14,12 @@ import LoginScreen from "./Screens/LoginScreen";
 import PostsScreen from "./Screens/PostsScreen";
 
 export default function App() {
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  // const [isKeyboard, setIsKeyboard] = useState(false);
 
-  const keyboardClose = () => {
-    setIsKeyboardOpen(false);
-    Keyboard.dismiss();
-  };
+  // const keyboardClose = () => {
+  //   setIsKeyboard(false);
+  //   Keyboard.dismiss();
+  // };
 
   const [fontsLoaded] = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
@@ -32,8 +32,8 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={keyboardClose}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
         <ImageBackground
           style={styles.image}
           source={require("./assets/images/bg-img.jpg")}
@@ -43,8 +43,8 @@ export default function App() {
           {/* <PostsScreen /> */}
           <StatusBar style="auto" />
         </ImageBackground>
-      </TouchableWithoutFeedback>
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

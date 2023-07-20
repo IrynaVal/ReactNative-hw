@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 const initialFormState = {
@@ -21,12 +23,11 @@ export default function LoginScreen() {
     email: false,
     password: false,
   });
+  const [isVisible, setIsVisible] = useState(false);
 
   const keyboardClose = () => {
     setIsKeyboardOpen(false);
     Keyboard.dismiss();
-    console.log(formState);
-    setFormState(initialFormState);
   };
 
   const handleInputFocus = (textinput) => {
@@ -41,80 +42,100 @@ export default function LoginScreen() {
     });
   };
 
+  const logIn = () => {
+    console.log(formState);
+    setFormState(initialFormState);
+  };
+
+  const showPassword = () => {
+    setIsVisible((prevState) => !prevState);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={keyboardClose}>
       <View style={styles.container}>
-        <View
-          style={{
-            ...styles.form,
-            marginBottom: isKeyboardOpen ? 32 : 111,
-          }}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Увійти</Text>
-          </View>
-          <View>
-            <TextInput
-              style={
-                isFocused.email
-                  ? { ...styles.onFocusInput, marginTop: 16 }
-                  : { ...styles.input, marginTop: 16 }
-              }
-              placeholder={"Адреса електронної пошти"}
-              placeholderTextColor={"#bdbdbd"}
-              onFocus={() => handleInputFocus("email")}
-              onBlur={() => handleInputBlur("email")}
-              value={formState.email}
-              onChangeText={(value) =>
-                setFormState((prevState) => ({ ...prevState, email: value }))
-              }
-            />
-            <View style={{ position: "relative" }}>
+          <View
+            style={{
+              ...styles.form,
+              marginBottom: isKeyboardOpen ? 32 : 111,
+            }}
+          >
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Увійти</Text>
+            </View>
+            <View>
               <TextInput
                 style={
-                  isFocused.password
+                  isFocused.email
                     ? { ...styles.onFocusInput, marginTop: 16 }
                     : { ...styles.input, marginTop: 16 }
                 }
-                placeholder={"Пароль"}
+                placeholder={"Адреса електронної пошти"}
                 placeholderTextColor={"#bdbdbd"}
-                secureTextEntry={true}
-                onFocus={() => handleInputFocus("password")}
-                onBlur={() => handleInputBlur("password")}
-                value={formState.password}
+                onFocus={() => handleInputFocus("email")}
+                onBlur={() => handleInputBlur("email")}
+                value={formState.email}
                 onChangeText={(value) =>
-                  setFormState((prevState) => ({
-                    ...prevState,
-                    password: value,
-                  }))
+                  setFormState((prevState) => ({ ...prevState, email: value }))
                 }
               />
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={{
-                  ...styles.link,
-                  position: "absolute",
-                  top: 10,
-                  right: 16,
-                }}
-              >
-                <Text style={styles.linkTitle}>Показати</Text>
-              </TouchableOpacity>
+              <View style={{ position: "relative" }}>
+                <TextInput
+                  style={
+                    isFocused.password
+                      ? { ...styles.onFocusInput, marginTop: 16 }
+                      : { ...styles.input, marginTop: 16 }
+                  }
+                  placeholder={"Пароль"}
+                  placeholderTextColor={"#bdbdbd"}
+                  secureTextEntry={!isVisible ? true : false}
+                  onFocus={() => handleInputFocus("password")}
+                  onBlur={() => handleInputBlur("password")}
+                  value={formState.password}
+                  onChangeText={(value) =>
+                    setFormState((prevState) => ({
+                      ...prevState,
+                      password: value,
+                    }))
+                  }
+                />
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={{
+                    ...styles.link,
+                    position: "absolute",
+                    top: 10,
+                    right: 16,
+                  }}
+                  onPress={showPassword}
+                >
+                  <Text style={styles.linkTitle}>
+                    {!isVisible ? "Показати" : "Сховати"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
+            {!isKeyboardOpen && (
+              <>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.btn}
+                  onPress={logIn}
+                >
+                  <Text style={styles.btnTitle}>Увійти</Text>
+                </TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.8} style={styles.link}>
+                  <Text style={styles.linkTitle}>
+                    Немає акаунту? Зареєструватися
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
-          {!isKeyboardOpen && (
-            <>
-              <TouchableOpacity activeOpacity={0.8} style={styles.btn}>
-                <Text style={styles.btnTitle}>Увійти</Text>
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.8} style={styles.link}>
-                <Text style={styles.linkTitle}>
-                  Немає акаунту? Зареєструватися
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+        </KeyboardAvoidingView>
       </View>
     </TouchableWithoutFeedback>
   );
