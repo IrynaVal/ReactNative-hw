@@ -1,61 +1,54 @@
-import { StatusBar } from "expo-status-bar";
+import "react-native-gesture-handler";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  ImageBackground,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 
-import RegistrationScreen from "./Screens/RegistrationScreen";
-import LoginScreen from "./Screens/LoginScreen";
-import PostsScreen from "./Screens/PostsScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+
+// import { chooseNavigation } from "./router";
+
+import RegistrationScreen from "./Screens/Auth/RegistrationScreen";
+import LoginScreen from "./Screens/Auth/LoginScreen";
+import Home from "./Screens/Main/Home";
+
+const AuthStack = createStackNavigator();
 
 export default function App() {
-  // const [isKeyboard, setIsKeyboard] = useState(false);
-
-  // const keyboardClose = () => {
-  //   setIsKeyboard(false);
-  //   Keyboard.dismiss();
-  // };
-
   const [fontsLoaded] = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
   });
 
+  // const routing = chooseNavigation(null);
+  // const routing = chooseNavigation({});
+  
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <ImageBackground
-          style={styles.image}
-          source={require("./assets/images/bg-img.jpg")}
-        >
-          <RegistrationScreen />
-          {/* <LoginScreen /> */}
-          {/* <PostsScreen /> */}
-          <StatusBar style="auto" />
-        </ImageBackground>
-      </View>
-    </TouchableWithoutFeedback>
+    <NavigationContainer>
+      <AuthStack.Navigator initialRouteName="Login">
+        <AuthStack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          options={{ headerShown: false }}
+        />
+        <AuthStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <AuthStack.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }}
+        />
+      </AuthStack.Navigator>
+      {/* {routing} */}
+      <StatusBar style="auto" />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "flex-end",
-  },
-});

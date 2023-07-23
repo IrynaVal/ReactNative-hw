@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-export default function PostsScreen() {
+export default function CommentsScreen() {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   const keyboardClose = () => {
@@ -21,7 +21,7 @@ export default function PostsScreen() {
     <TouchableWithoutFeedback onPress={keyboardClose}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Публікації</Text>
+          <Text style={styles.headerTitle}>Comments</Text>
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -38,8 +38,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     marginTop: 55,
     paddingBottom: 11,
-    borderBottomWidth: 2,
-    borderBottomColor: "#e8e8e8",
   },
   headerTitle: {
     fontSize: 17,
