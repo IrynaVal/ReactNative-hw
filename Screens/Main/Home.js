@@ -1,8 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  TouchableOpacity,
-} from "react-native";
+import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import PostsScreen from "./PostsScreen";
@@ -81,6 +79,7 @@ export default function Home() {
             borderRadius: 20,
             marginTop: 8,
           },
+          tabBarHideOnKeyboard: true,
         }}
       />
       <MainTab.Screen
@@ -96,4 +95,3 @@ export default function Home() {
     </MainTab.Navigator>
   );
 }
-

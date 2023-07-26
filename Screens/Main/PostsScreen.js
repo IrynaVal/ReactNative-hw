@@ -1,47 +1,32 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from "react-native";
+import React from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import MapScreen from "../nestedScreens/MapScreen";
+import CommentsScreen from "../nestedScreens/CommentsScreen";
+import DefaultPostsScreen from "../nestedScreens/DefaultPostsScreen";
+
+const NestedScreen = createStackNavigator();
 
 export default function PostsScreen() {
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-
-  const keyboardClose = () => {
-    setIsKeyboardOpen(false);
-    Keyboard.dismiss();
-    console.log(formState);
-    setFormState(initialFormState);
-  };
-
   return (
-    <TouchableWithoutFeedback onPress={keyboardClose}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Публікації</Text>
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
+    <NestedScreen.Navigator
+      initialRouteName="DefaultScreen"
+      screenOptions={{ headerShown: false }}
+    >
+      <NestedScreen.Screen
+        name="DefaultScreen"
+        component={DefaultPostsScreen}
+        // options={{ headerShown: false }}
+      />
+      <NestedScreen.Screen
+        name="Comments"
+        component={CommentsScreen}
+        // options={{ headerShown: false }}
+      />
+      <NestedScreen.Screen
+        name="Map"
+        component={MapScreen}
+        // options={{ headerShown: false }}
+      />
+    </NestedScreen.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 32,
-    marginTop: 55,
-    paddingBottom: 11,
-  },
-  headerTitle: {
-    fontSize: 17,
-    color: "#212121",
-    fontFamily: "Roboto-Medium",
-  },
-});

@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React, { useState } from "react";
+import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -8,9 +8,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 // import { chooseNavigation } from "./router";
 
-import RegistrationScreen from "./Screens/Auth/RegistrationScreen";
-import LoginScreen from "./Screens/Auth/LoginScreen";
-import Home from "./Screens/Main/Home";
+import RegistrationScreen from "./Screens/auth/RegistrationScreen";
+import LoginScreen from "./Screens/auth/LoginScreen";
+import Home from "./Screens/main/Home";
 
 const AuthStack = createStackNavigator();
 
@@ -23,7 +23,7 @@ export default function App() {
 
   // const routing = chooseNavigation(null);
   // const routing = chooseNavigation({});
-  
+
   if (!fontsLoaded) {
     return null;
   }
