@@ -2,6 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
 
 import PostsScreen from "./PostsScreen";
 import ProfileScreen from "./ProfileScreen";
@@ -10,11 +11,21 @@ import PostsSvg from "../../assets/images/svg/PostsSvg";
 import PlusSvg from "../../assets/images/svg/PlusSvg";
 import ProfileSvg from "../../assets/images/svg/ProfileSvg";
 import LogoutSvg from "../../assets/images/svg/LogoutSvg";
+import { userLogOut } from "../../redux/auth/authOperations";
 
 const MainTab = createBottomTabNavigator();
 
-export default function Home() {
+export default function Home({ route }) {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { login, email } = useSelector((state) => state.auth);
+
+  const logOut = () => {
+    console.log("Logout login", login);
+    console.log("Logout email", email);
+    dispatch(userLogOut());
+    // navigation.navigate("Login");
+  };
 
   return (
     <MainTab.Navigator
@@ -22,7 +33,19 @@ export default function Home() {
       screenOptions={{
         tabBarShowLabel: false,
         headerTitleAlign: "center",
+
+        // activeTintColor: "#ff6c00",
+        // inactiveTintColor: "gray",
       }}
+      // screenOptions={({ route }) => ({
+      //  tabBarShowLabel: false,
+      //   headerTitleAlign: "center",
+
+      //     if (route.name === "Create") {
+      //       tabBarStyle: { display: "none" }
+      //     }
+      //     return;
+      // })}
     >
       <MainTab.Screen
         name="Posts"
@@ -43,8 +66,7 @@ export default function Home() {
             <TouchableOpacity
               activeOpacity={0.3}
               style={{ marginRight: 10 }}
-              // onPress={logOut}
-              onPress={() => navigation.navigate("Login")}
+              onPress={logOut}
             >
               <LogoutSvg />
             </TouchableOpacity>
@@ -80,6 +102,7 @@ export default function Home() {
             marginTop: 8,
           },
           tabBarHideOnKeyboard: true,
+          tabBarStyle: { display: "none" },
         }}
       />
       <MainTab.Screen

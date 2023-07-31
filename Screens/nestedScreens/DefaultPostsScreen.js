@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { collection, onSnapshot } from "firebase/firestore";
 import {
   StyleSheet,
   Image,
@@ -8,34 +10,39 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import MessageSvg from "../../assets/images/svg/MessageSvg";
+import { MessageSvg } from "../../assets/images/svg/MessageSvg";
 import MapSvg from "../../assets/images/svg/MapSvg";
+import { db } from "../../firebase/config";
 
 export default function DefaultPostsScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
 
+  const { login, email } = useSelector((state) => state.auth);
+  console.log("posts login", login);
+  console.log("posts email", email);
+
+  const getAllPosts = async () => {
+    await onSnapshot(collection(db, "posts"), (snapshot) => {
+      setPosts(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
+  };
+
   useEffect(() => {
-    if (route.params) {
-      console.log(route.params);
-      setPosts((prevState) => [route.params, ...prevState]);
-    }
-  }, [route.params]);
+    getAllPosts();
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.userContainer}>
         <View style={styles.photoBox}>
           <Image
-            // source={{
-            //   uri: "https://reactjs.org/logo-og.png",
-            // }}
             source={require("../../assets/images/photo.jpg")}
             style={styles.photo}
           />
         </View>
         <View>
-          <Text style={styles.userName}>Natali Romanova</Text>
-          <Text style={styles.userEmail}>email@example.com</Text>
+          <Text style={styles.userName}>{login}</Text>
+          <Text style={styles.userEmail}>{email}</Text>
         </View>
       </View>
       <FlatList
@@ -56,12 +63,18 @@ export default function DefaultPostsScreen({ route, navigation }) {
                 color: "#212121",
               }}
             >
-              {route.params.formState.title}
+              {item.formState.title}
+              {/* {route.params.title} */}
             </Text>
             <View style={{ flexDirection: "row", gap: 49 }}>
               <TouchableOpacity
                 activeOpacity={0.3}
-                onPress={() => navigation.navigate("Comments")}
+                onPress={() =>
+                  navigation.navigate("Comments", {
+                    postId: item.id,
+                    photoUrl: item.photo,
+                  })
+                }
                 style={{ flexDirection: "row", gap: 6 }}
               >
                 <MessageSvg />
@@ -72,13 +85,15 @@ export default function DefaultPostsScreen({ route, navigation }) {
                     color: "#bdbdbd",
                   }}
                 >
-                  0
+                  {item.commentCounter}0
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 activeOpacity={0.3}
-                onPress={() => navigation.navigate("Map")}
+                onPress={() =>
+                  navigation.navigate("Map", { location: item.location })
+                }
                 style={{ flexDirection: "row", gap: 6 }}
               >
                 <MapSvg />
@@ -90,7 +105,8 @@ export default function DefaultPostsScreen({ route, navigation }) {
                     textDecorationLine: "underline",
                   }}
                 >
-                  {route.params.formState.place}
+                  {item.formState.place}
+                  {/* {route.params.place} */}
                 </Text>
               </TouchableOpacity>
             </View>

@@ -12,6 +12,9 @@ import {
   ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+
+import { userLogIn } from "../../redux/auth/authOperations";
 
 const initialFormState = {
   email: "",
@@ -28,6 +31,7 @@ export default function LoginScreen() {
   const [isVisible, setIsVisible] = useState(false);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const keyboardClose = () => {
     setIsKeyboardOpen(false);
@@ -48,6 +52,7 @@ export default function LoginScreen() {
 
   const logIn = () => {
     console.log(formState);
+    dispatch(userLogIn(formState));
     setFormState(initialFormState);
     navigation.navigate("Home");
   };

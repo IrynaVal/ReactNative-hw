@@ -1,18 +1,12 @@
 import "react-native-gesture-handler";
 import React from "react";
-import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
-import { createStackNavigator } from "@react-navigation/stack";
+import { store, persistor } from "./redux/store";
 
-// import { chooseNavigation } from "./router";
-
-import RegistrationScreen from "./Screens/auth/RegistrationScreen";
-import LoginScreen from "./Screens/auth/LoginScreen";
-import Home from "./Screens/main/Home";
-
-const AuthStack = createStackNavigator();
+import Main from "./components/Main";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -21,34 +15,15 @@ export default function App() {
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
   });
 
-  // const routing = chooseNavigation(null);
-  // const routing = chooseNavigation({});
-
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <NavigationContainer>
-      <AuthStack.Navigator initialRouteName="Login">
-        <AuthStack.Screen
-          name="Registration"
-          component={RegistrationScreen}
-          options={{ headerShown: false }}
-        />
-        <AuthStack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <AuthStack.Screen
-          name="Home"
-          component={Home}
-          options={{ headerShown: false }}
-        />
-      </AuthStack.Navigator>
-      {/* {routing} */}
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <Main />
+      </PersistGate>
+    </Provider>
   );
 }

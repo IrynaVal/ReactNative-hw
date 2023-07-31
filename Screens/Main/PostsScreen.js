@@ -10,22 +10,48 @@ export default function PostsScreen() {
   return (
     <NestedScreen.Navigator
       initialRouteName="DefaultScreen"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ tabBarStyle: { display: "none" } }}
     >
       <NestedScreen.Screen
         name="DefaultScreen"
         component={DefaultPostsScreen}
-        // options={{ headerShown: false }}
+        options={{ headerShown: false }}
       />
       <NestedScreen.Screen
         name="Comments"
         component={CommentsScreen}
-        // options={{ headerShown: false }}
+        options={{
+          title: "Коментарі",
+          headerStyle: {
+            borderBottomWidth: 2,
+            borderBottomColor: "#e8e8e8",
+          },
+          headerTintColor: "#212121",
+          headerTitleStyle: {
+            fontFamily: "Roboto-Medium",
+            fontSize: 17,
+            marginLeft: 82,
+          },
+          tabBarStyle: { display: "none" },
+        }}
       />
       <NestedScreen.Screen
         name="Map"
         component={MapScreen}
-        // options={{ headerShown: false }}
+        options={{
+          title: "Карта",
+          headerStyle: {
+            borderBottomWidth: 2,
+            borderBottomColor: "#e8e8e8",
+          },
+          headerTintColor: "#212121",
+          headerTitleStyle: {
+            fontFamily: "Roboto-Medium",
+            fontSize: 17,
+            marginLeft: 105,
+          },
+          // tabBarStyle: { display: "none" },
+        }}
       />
     </NestedScreen.Navigator>
   );

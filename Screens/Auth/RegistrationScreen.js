@@ -13,8 +13,14 @@ import {
   ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+
 import AddSvg from "../../assets/images/svg/AddSvg";
 import CrossSvg from "../../assets/images/svg/CrossSvg";
+import { userSignUp } from "../../redux/auth/authOperations";
+import { db, storage } from "../../firebase/config";
 
 const initialFormState = {
   login: "",
@@ -31,8 +37,10 @@ export default function RegistrationScreen() {
     password: false,
   });
   const [isVisible, setIsVisible] = useState(false);
+  const [photo, setPhoto] = useState(null);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const keyboardClose = () => {
     setIsKeyboardOpen(false);
@@ -51,14 +59,37 @@ export default function RegistrationScreen() {
     });
   };
 
-  const signIn = () => {
+  const signUp = () => {
     console.log(formState);
+    dispatch(userSignUp(formState));
     setFormState(initialFormState);
     navigation.navigate("Home");
   };
 
   const showPassword = () => {
     setIsVisible((prevState) => !prevState);
+  };
+
+  let photoPath = "../../assets/images/photo.jpg";
+
+  const addPhoto = async () => {
+    setPhoto(photoPath);
+
+    // const response = await fetch(photo);
+    // const file = await response.blob();
+
+    // const photoId = Date.now().toString();
+    // const storageRef = await ref(storage, `userPhoto/${photoId}`);
+    // await uploadBytesResumable(storageRef, file);
+
+    // const getPhotoUrl = await getDownloadURL(storageRef);
+    // console.log("getPhotoUrl", getPhotoUrl);
+
+    // return getPhotoUrl;
+  };
+
+  const deletePhoto = () => {
+    setPhoto(null);
   };
 
   return (
@@ -79,17 +110,42 @@ export default function RegistrationScreen() {
                 }}
               >
                 <View style={styles.photoBox}>
-                  <Image
-                    // source={{
-                    //   uri: "https://reactjs.org/logo-og.png",
-                    // }}
-                    source={require("../../assets/images/photo.jpg")}
-                    style={styles.photo}
-                  />
-                  <View style={styles.addBtnBox}>
-                    {/* <AddSvg /> */}
-                    <CrossSvg />
-                  </View>
+                  {photo ? (
+                    <>
+                      <Image
+                        // source={{
+                        //   uri: "https://reactjs.org/logo-og.png",
+                        // }}
+                        source={require("../../assets/images/photo.jpg")}
+                        style={styles.photo}
+                      />
+
+                      <TouchableOpacity
+                        activeOpacity={0.3}
+                        style={styles.deleteBtnBox}
+                        onPress={deletePhoto}
+                      >
+                        <CrossSvg />
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <Image
+                        source={{
+                          uri: "https://",
+                        }}
+                        style={styles.photo}
+                      />
+
+                      <TouchableOpacity
+                        activeOpacity={0.3}
+                        style={styles.addBtnBox}
+                        onPress={addPhoto}
+                      >
+                        <AddSvg />
+                      </TouchableOpacity>
+                    </>
+                  )}
                 </View>
                 <View style={styles.header}>
                   <Text style={styles.headerTitle}>Реєстрація</Text>
@@ -168,7 +224,7 @@ export default function RegistrationScreen() {
                     <TouchableOpacity
                       activeOpacity={0.8}
                       style={styles.btn}
-                      onPress={signIn}
+                      onPress={signUp}
                     >
                       <Text style={styles.btnTitle}>Зареєструватися</Text>
                     </TouchableOpacity>
@@ -231,12 +287,15 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 16,
   },
-  addBtnBox: {
+  deleteBtnBox: {
     position: "absolute",
-    // bottom: 14,
-    // left: 107,
     bottom: 9,
     left: 102,
+  },
+  addBtnBox: {
+    position: "absolute",
+    bottom: 14,
+    left: 107,
   },
   addBtn: {
     width: 25,

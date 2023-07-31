@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -14,12 +15,16 @@ import {
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+
 import {
   CameraSvgWhite,
   CameraSvgGray,
 } from "../../assets/images/svg/CameraSvg";
 import MapSvg from "../../assets/images/svg/MapSvg";
 import TrashSvg from "../../assets/images/svg/TrashSvg";
+import { db, storage } from "../../firebase/config";
 
 const initialFormState = {
   title: "",
@@ -36,6 +41,12 @@ export default function CreatePostsScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
+  // const [photoTitle, setPhotoTitle] = useState("");
+  const [location, setLocation] = useState("");
+
+  const { userId, login } = useSelector((state) => state.auth);
+  console.log("crposts login", login);
+  console.log("crposts userId", userId);
 
   useEffect(() => {
     (async () => {
@@ -79,17 +90,52 @@ export default function CreatePostsScreen({ navigation }) {
   };
 
   const takePhoto = async () => {
-    if (cameraRef) {
-      const photo = await cameraRef.takePictureAsync();
-      await MediaLibrary.createAssetAsync(photo.uri);
-      setPhoto(photo.uri);
-      const location = await Location.getCurrentPositionAsync();
-    }
-    console.log("Camera error");
+    const photo = await cameraRef.takePictureAsync();
+    await MediaLibrary.createAssetAsync(photo.uri);
+    setPhoto(photo.uri);
+
+    let locationRes = await Location.getCurrentPositionAsync({});
+    setLocation(locationRes);
+    console.log("locationRes", location);
   };
 
   const sendPhoto = () => {
-    navigation.navigate("DefaultScreen", { photo, formState });
+    uploadPostToServer();
+    navigation.navigate("DefaultScreen");
+    setFormState(initialFormState);
+  };
+
+  const uploadPostToServer = async () => {
+    try {
+      const photo = await uploadPhotoToServer();
+      const docRef = await addDoc(collection(db, "posts"), {
+        photo,
+        formState,
+        location,
+        userId,
+        login,
+      });
+    } catch (error) {
+      console.log("Error adding document: ", error);
+    }
+  };
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+
+    const postId = Date.now().toString();
+    const storageRef = await ref(storage, `postImages/${postId}`);
+    await uploadBytesResumable(storageRef, file);
+
+    const getImageUrl = await getDownloadURL(storageRef);
+    console.log("getImageUrl", getImageUrl);
+
+    return getImageUrl;
+  };
+
+  const deletePost = () => {
+    setPhoto(null);
     setFormState(initialFormState);
   };
 
@@ -223,12 +269,12 @@ export default function CreatePostsScreen({ navigation }) {
                     width: 70,
                     height: 40,
                     borderRadius: 20,
-                    marginTop: 74,
+                    marginTop: 120,
                     justifyContent: "center",
                     alignItems: "center",
                     alignSelf: "center",
                   }}
-                  // onPress={deletePost}
+                  onPress={deletePost}
                 >
                   <TrashSvg />
                 </TouchableOpacity>
